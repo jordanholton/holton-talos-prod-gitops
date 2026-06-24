@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: holton-prod-postgres-1-lb
+  namespace: cnpg-system
+spec:
+  type: LoadBalancer
+  selector:
+    cnpg.io/cluster: holton-prod-postgres-1
+    cnpg.io/instanceRole: primary
+  ports:
+  - name: postgres
+    protocol: TCP
+    port: 5432
+    targetPort: 5432
