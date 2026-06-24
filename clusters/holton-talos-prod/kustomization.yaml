@@ -4,3 +4,4 @@ resources:
 - flux-system/
 - cnpg-operator-ks.yaml
 - cnpg-cluster-ks.yaml
+- vault-ks.yaml
