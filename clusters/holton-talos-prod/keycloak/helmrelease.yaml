@@ -1,0 +1,72 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: keycloak
+  namespace: flux-system
+spec:
+  releaseName: keycloak
+  interval: 1h
+  chart:
+    spec:
+      chart: keycloakx
+      version: ">=2.0.0 <3.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: codecentric
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  targetNamespace: keycloak
+  values:
+    replicas: 2
+
+    command:
+      - "/opt/keycloak/bin/kc.sh"
+      - "start"
+
+    extraEnv: |
+      - name: KC_HOSTNAME
+        value: "https://sso.holton.xyz"
+      - name: KC_HTTP_ENABLED
+        value: "true"
+      - name: KC_HTTP_PORT
+        value: "8080"
+      - name: KC_PROXY_HEADERS
+        value: "xforwarded"
+      - name: KC_DB
+        value: "postgres"
+      - name: KC_DB_URL
+        value: "jdbc:postgresql://holton-prod-postgres-1-rw.cnpg-system.svc.cluster.local:5432/keycloak"
+      - name: KC_DB_USERNAME
+        value: "app"
+      - name: KC_DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: keycloak-db-secret
+            key: password
+      - name: KEYCLOAK_ADMIN
+        value: "admin"
+      - name: KEYCLOAK_ADMIN_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: keycloak-admin-secret
+            key: password
+      - name: KC_CACHE
+        value: "ispn"
+      - name: KC_CACHE_STACK
+        value: "kubernetes"
+
+    service:
+      type: ClusterIP
+
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "500m"
+      limits:
+        memory: "1536Mi"
+        cpu: "2"
