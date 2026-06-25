@@ -1,0 +1,54 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: flux-system
+spec:
+  releaseName: grafana
+  interval: 1h
+  chart:
+    spec:
+      chart: grafana
+      version: ">=8.0.0 <9.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  targetNamespace: monitoring
+  values:
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: nfs-csi
+
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+        - name: Loki
+          type: loki
+          url: http://loki.monitoring.svc.cluster.local:3100
+          access: proxy
+          isDefault: true
+
+    grafana.ini:
+      server:
+        root_url: https://boards.holton.xyz
+
+    service:
+      type: ClusterIP
+      port: 80
+
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
