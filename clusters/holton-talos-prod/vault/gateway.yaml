@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: vault-gateway
+  namespace: vault
+spec:
+  gatewayClassName: cilium
+  listeners:
+  - name: https
+    hostname: secrets.holton.xyz
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: vault-tls-cert
+        kind: Secret
+    allowedRoutes:
+      namespaces:
+        from: Same
