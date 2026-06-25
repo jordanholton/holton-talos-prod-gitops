@@ -27,6 +27,7 @@ spec:
     command:
       - "/opt/keycloak/bin/kc.sh"
       - "start"
+      - "--http-relative-path=/"
 
     extraEnv: |
       - name: KC_HOSTNAME
@@ -61,9 +62,6 @@ spec:
         value: "kubernetes"
       - name: JAVA_OPTS_APPEND
         value: "-Djgroups.dns.query=keycloak-keycloakx-headless.keycloak.svc.cluster.local"
-
-    http:
-      relativePath: "/"
 
     service:
       type: ClusterIP
