@@ -59,6 +59,8 @@ spec:
         value: "ispn"
       - name: KC_CACHE_STACK
         value: "kubernetes"
+      - name: JAVA_OPTS_APPEND
+        value: "-Djgroups.dns.query=keycloak-keycloakx-headless.keycloak.svc.cluster.local"
 
     service:
       type: ClusterIP
