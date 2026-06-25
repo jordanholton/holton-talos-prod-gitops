@@ -23,6 +23,8 @@ spec:
   values:
     global:
       imageRegistry: "ghcr.io"
+      security:
+        allowInsecureImages: true
 
     architecture: replication
 
