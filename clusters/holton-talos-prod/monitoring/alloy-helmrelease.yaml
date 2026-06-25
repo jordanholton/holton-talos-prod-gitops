@@ -1,0 +1,60 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy
+  namespace: flux-system
+spec:
+  releaseName: alloy
+  interval: 1h
+  chart:
+    spec:
+      chart: k8s-monitoring
+      version: ">=1.0.0 <2.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  targetNamespace: monitoring
+  values:
+    cluster:
+      name: holton-talos-prod
+
+    externalServices:
+      loki:
+        host: "http://loki.monitoring.svc.cluster.local"
+        writeEndpoint: "/loki/api/v1/push"
+
+    logs:
+      enabled: true
+      pod_logs:
+        enabled: true
+      cluster_events:
+        enabled: true
+
+    metrics:
+      enabled: false
+      cost:
+        enabled: false
+      node_exporter:
+        enabled: false
+
+    traces:
+      enabled: false
+
+    opencost:
+      enabled: false
+
+    kube-state-metrics:
+      enabled: false
+
+    prometheus-node-exporter:
+      enabled: false
+
+    prometheus-operator-crds:
+      enabled: false
