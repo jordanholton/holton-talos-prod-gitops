@@ -21,6 +21,9 @@ spec:
       retries: 3
   targetNamespace: redis
   values:
+    global:
+      imageRegistry: "ghcr.io"
+
     architecture: replication
 
     auth:
