@@ -30,7 +30,7 @@ spec:
 
     extraEnv: |
       - name: KC_HOSTNAME
-        value: "https://sso.holton.xyz"
+        value: "sso.holton.xyz"
       - name: KC_HTTP_ENABLED
         value: "true"
       - name: KC_HTTP_PORT
