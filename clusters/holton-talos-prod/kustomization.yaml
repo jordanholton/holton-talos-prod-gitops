@@ -5,3 +5,4 @@ resources:
 - cnpg-operator-ks.yaml
 - cnpg-cluster-ks.yaml
 - vault-ks.yaml
+- redis-ks.yaml
