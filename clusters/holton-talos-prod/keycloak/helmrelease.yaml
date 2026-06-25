@@ -31,6 +31,8 @@ spec:
     extraEnv: |
       - name: KC_HOSTNAME
         value: "sso.holton.xyz"
+      - name: KC_HTTP_RELATIVE_PATH
+        value: "/"
       - name: KC_HTTP_ENABLED
         value: "true"
       - name: KC_HTTP_PORT
