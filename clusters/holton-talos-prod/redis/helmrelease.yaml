@@ -7,11 +7,11 @@ spec:
   interval: 1h
   chart:
     spec:
-      chart: redis
-      version: ">=20.0.0 <21.0.0"
+      chart: redis-ha
+      version: ">=4.0.0 <5.0.0"
       sourceRef:
         kind: HelmRepository
-        name: bitnami
+        name: dandydeveloper
         namespace: flux-system
   install:
     remediation:
@@ -21,47 +21,31 @@ spec:
       retries: 3
   targetNamespace: redis
   values:
-    global:
-      imageRegistry: "ghcr.io"
-      security:
-        allowInsecureImages: true
+    replicas: 3
 
-    architecture: replication
-
-    auth:
-      enabled: true
+    redis:
+      masterGroupName: holton-prod
+      config:
+        maxmemory: 512mb
+        maxmemory-policy: allkeys-lru
 
     sentinel:
-      enabled: true
-      masterSet: holton-prod
+      port: 26379
       quorum: 2
-      service:
-        type: LoadBalancer
 
-    master:
-      count: 1
-      persistence:
-        enabled: true
-        size: 8Gi
-        storageClass: nfs-csi
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "250m"
-        limits:
-          memory: "512Mi"
-          cpu: "500m"
+    auth: false
 
-    replica:
-      replicaCount: 3
-      persistence:
-        enabled: true
-        size: 8Gi
-        storageClass: nfs-csi
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "250m"
-        limits:
-          memory: "512Mi"
-          cpu: "500m"
+    persistentVolume:
+      enabled: true
+      size: 8Gi
+      storageClass: nfs-csi
+
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+    serviceType: LoadBalancer
