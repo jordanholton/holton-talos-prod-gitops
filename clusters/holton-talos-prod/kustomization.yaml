@@ -9,3 +9,4 @@ resources:
 - redis-ks.yaml
 - monitoring-ks.yaml
 - keycloak-ks.yaml
+- holton-xyz-ks.yaml

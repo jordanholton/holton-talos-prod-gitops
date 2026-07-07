@@ -1,0 +1,32 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: holton-xyz-gateway
+  namespace: holton-xyz
+spec:
+  gatewayClassName: cilium
+  listeners:
+  - name: https
+    hostname: holton.xyz
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: holton-xyz-cert
+        kind: Secret
+    allowedRoutes:
+      namespaces:
+        from: Same
+  - name: https-www
+    hostname: www.holton.xyz
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: holton-xyz-cert
+        kind: Secret
+    allowedRoutes:
+      namespaces:
+        from: Same
