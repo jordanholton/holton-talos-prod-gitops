@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: cv-jordanholton-com
+  namespace: cv-jordanholton-com
+spec:
+  parentRefs:
+  - name: cv-jordanholton-com-gateway
+    namespace: cv-jordanholton-com
+    sectionName: https
+  hostnames:
+  - cv.jordanholton.com
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: cv-jordanholton-com
+      port: 80
