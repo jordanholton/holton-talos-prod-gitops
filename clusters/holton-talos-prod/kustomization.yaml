@@ -10,3 +10,4 @@ resources:
 - monitoring-ks.yaml
 - keycloak-ks.yaml
 - holton-xyz-ks.yaml
+- jth-gg-ks.yaml

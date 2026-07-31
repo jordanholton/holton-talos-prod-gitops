@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: jth-gg
+  namespace: jth-gg
+spec:
+  parentRefs:
+  - name: jth-gg-gateway
+    namespace: jth-gg
+    sectionName: https
+  hostnames:
+  - jth.gg
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: jth-gg
+      port: 80
