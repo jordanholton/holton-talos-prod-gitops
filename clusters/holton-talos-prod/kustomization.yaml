@@ -11,3 +11,4 @@ resources:
 - keycloak-ks.yaml
 - holton-xyz-ks.yaml
 - jth-gg-ks.yaml
+- home-holton-xyz-ks.yaml

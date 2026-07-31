@@ -1,0 +1,12 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: home-holton-xyz
+  namespace: flux-system
+spec:
+  interval: 1h
+  path: ./clusters/holton-talos-prod/home-holton-xyz
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
