@@ -1,0 +1,32 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: holtonmetal-com-gateway
+  namespace: holtonmetal-com
+spec:
+  gatewayClassName: cilium
+  listeners:
+  - name: https
+    hostname: holtonmetal.com
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: holtonmetal-com-cert
+        kind: Secret
+    allowedRoutes:
+      namespaces:
+        from: Same
+  - name: https-www
+    hostname: www.holtonmetal.com
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: holtonmetal-com-cert
+        kind: Secret
+    allowedRoutes:
+      namespaces:
+        from: Same
