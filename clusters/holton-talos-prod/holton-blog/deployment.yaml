@@ -1,0 +1,120 @@
+# Requires two hand-made Secrets in this namespace (not stored in git):
+#
+#   kubectl -n holton-blog create secret docker-registry ghcr-image-pull \
+#     --docker-server=ghcr.io --docker-username=jordanholton --docker-password=<GH_PAT>
+#
+#   kubectl -n holton-blog create secret generic holton-blog-secrets \
+#     --from-literal=APP_KEY="$(php artisan key:generate --show)" \
+#     --from-literal=DB_PASSWORD="$(kubectl -n cnpg-system get secret holton-prod-postgres-1-app -o jsonpath='{.data.password}' | base64 -d)"
+#
+# APP_KEY must stay the same across deploys: it encrypts cookies and sessions.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: holton-blog
+  namespace: holton-blog
+  labels:
+    app: holton-blog
+    component: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: holton-blog
+      component: web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  minReadySeconds: 30
+  progressDeadlineSeconds: 120
+  template:
+    metadata:
+      labels:
+        app: holton-blog
+        component: web
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: holton-blog
+              topologyKey: kubernetes.io/hostname
+      terminationGracePeriodSeconds: 10
+      imagePullSecrets:
+      - name: ghcr-image-pull
+      initContainers:
+      # --isolated takes a cache lock so only one pod migrates during a rollout.
+      - name: migrate
+        image: ghcr.io/jordanholton/holton.blog/holton-blog-php:latest
+        imagePullPolicy: Always
+        command: ["php", "artisan", "migrate", "--force", "--isolated"]
+        envFrom:
+        - configMapRef:
+            name: holton-blog-env
+        - secretRef:
+            name: holton-blog-secrets
+        securityContext:
+          runAsUser: 82
+          runAsGroup: 82
+      containers:
+      - name: holton-blog-nginx
+        image: ghcr.io/jordanholton/holton.blog/holton-blog-nginx:latest
+        imagePullPolicy: Always
+        command: ["nginx", "-g", "daemon off;"]
+        volumeMounts:
+        - name: nginx
+          mountPath: /nginx
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /up
+            port: http
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+      - name: holton-blog-php
+        image: ghcr.io/jordanholton/holton.blog/holton-blog-php:latest
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: holton-blog-env
+        - secretRef:
+            name: holton-blog-secrets
+        volumeMounts:
+        - name: laravel-logs
+          mountPath: /var/www/html/storage/logs/
+        ports:
+        - name: php-fpm
+          containerPort: 9000
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        securityContext:
+          runAsUser: 82
+          runAsGroup: 82
+      volumes:
+      - name: nginx
+        emptyDir: {}
+      - name: laravel-logs
+        emptyDir: {}

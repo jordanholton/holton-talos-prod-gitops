@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: holton-blog
+  namespace: holton-blog
+spec:
+  parentRefs:
+  - name: holton-blog-gateway
+    namespace: holton-blog
+    sectionName: https
+  hostnames:
+  - holton.blog
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: holton-blog
+      port: 80

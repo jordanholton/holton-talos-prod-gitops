@@ -1,0 +1,42 @@
+# Non-secret environment for holton.blog. Real env vars take precedence over the
+# image's .env, so these override it. Secrets live in the holton-blog-secrets
+# Secret (APP_KEY, DB_PASSWORD), which is created by hand — see deployment.yaml.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: holton-blog-env
+  namespace: holton-blog
+data:
+  APP_NAME: holton.blog
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_URL: https://holton.blog
+  ASSET_URL: https://holton.blog
+  LOG_CHANNEL: stderr
+  LOG_LEVEL: warning
+
+  DB_CONNECTION: pgsql
+  DB_HOST: holton-prod-postgres-1-rw.cnpg-system.svc.cluster.local
+  DB_PORT: "5432"
+  DB_DATABASE: holton_blog
+  DB_USERNAME: app
+  DB_SSLMODE: require
+
+  REDIS_CLIENT: phpredis
+  REDIS_HOST: redis-redis-redis-ha-haproxy.redis.svc.cluster.local
+  REDIS_PORT: "6379"
+  # Redis is shared and has auth disabled: keep every key under this app's prefix.
+  REDIS_PREFIX: holton-blog-
+  REDIS_DB: "0"
+  REDIS_CACHE_DB: "1"
+  REDIS_SESSION_DB: "2"
+
+  SESSION_DRIVER: redis
+  SESSION_CONNECTION: session
+  SESSION_LIFETIME: "120"
+  SESSION_SECURE_COOKIE: "true"
+  SESSION_SAME_SITE: lax
+  SESSION_DOMAIN: holton.blog
+
+  CACHE_STORE: redis
+  QUEUE_CONNECTION: database

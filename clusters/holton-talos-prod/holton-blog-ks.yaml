@@ -1,0 +1,15 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: holton-blog
+  namespace: flux-system
+spec:
+  interval: 1h
+  path: ./clusters/holton-talos-prod/holton-blog
+  prune: true
+  dependsOn:
+  - name: cnpg-cluster
+  - name: redis
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
