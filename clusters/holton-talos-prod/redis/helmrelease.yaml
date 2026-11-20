@@ -35,6 +35,12 @@ spec:
 
     auth: false
 
+    # Laravel/phpredis can't follow Sentinel failovers, so apps connect through
+    # HAProxy (svc redis-redis-redis-ha-haproxy.redis), which always routes to the master.
+    haproxy:
+      enabled: true
+      replicas: 2
+
     persistentVolume:
       enabled: true
       size: 8Gi

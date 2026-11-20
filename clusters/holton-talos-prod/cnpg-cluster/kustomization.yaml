@@ -4,3 +4,4 @@ resources:
 - cluster.yaml
 - loadbalancer.yaml
 - keycloak-database.yaml
+- holton-blog-database.yaml
